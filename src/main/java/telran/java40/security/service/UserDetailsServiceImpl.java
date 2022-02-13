@@ -1,5 +1,7 @@
 package telran.java40.security.service;
 
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
@@ -24,8 +26,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		String[] roles = userAccount.getRoles().stream()
 							.map(r -> "ROLE_" + r.toUpperCase())
 							.toArray(String[]::new);
-		return new User(username, userAccount.getPassword(), 
-				AuthorityUtils.createAuthorityList(roles));
+		boolean credentialsNonExpired = userAccount.getPasswordExpDate().isAfter(LocalDate.now());
+//		return new User(username, userAccount.getPassword(), true, true, credentialsNonExpired,
+//				true, AuthorityUtils.createAuthorityList(roles));
+//		return new User(username, userAccount.getPassword(), 
+//				AuthorityUtils.createAuthorityList(roles));
+		return new UserProfile(username, userAccount.getPassword(), 
+				AuthorityUtils.createAuthorityList(roles), credentialsNonExpired);
+		
 	}
 
 }

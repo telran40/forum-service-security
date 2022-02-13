@@ -1,7 +1,10 @@
 package telran.java40.accounting.service;
 
+import java.time.LocalDate;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,8 @@ public class UserAccountServiceImpl implements UserAccountService {
 	UserAccountRepository repository;
 	ModelMapper modelMapper;
 	PasswordEncoder passwordEncoder;
+	@Value("${password.period:60}")
+	long passwordPeriod;
 
 	@Autowired
 	public UserAccountServiceImpl(UserAccountRepository repository, ModelMapper modelMapper,
@@ -38,6 +43,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		userAccount.addRole("USER".toUpperCase());
 		String password = passwordEncoder.encode(userRegisterDto.getPassword());
 		userAccount.setPassword(password);
+		userAccount.setPasswordExpDate(LocalDate.now().plusDays(passwordPeriod));
 		repository.save(userAccount);
 		return modelMapper.map(userAccount, UserAccountResponseDto.class);
 
@@ -93,6 +99,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		UserAccount userAccount = repository.findById(login).orElseThrow(() -> new UserNotFoundException(login));
 		password = passwordEncoder.encode(password);
 		userAccount.setPassword(password);
+		userAccount.setPasswordExpDate(LocalDate.now().plusDays(passwordPeriod));
 		repository.save(userAccount);
 
 	}

@@ -1,6 +1,7 @@
 package telran.java40.security.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import telran.java40.forum.dao.PostRepository;
@@ -18,6 +19,10 @@ public class CustomWebSecurity {
 	public boolean checkPostAuthority(String postId, String userName) {
 		Post post = postRepository.findById(postId).orElse(null);
 		return post != null && userName.equals(post.getAuthor());
+	}
+	
+	public boolean checkPasswordExpired(Authentication authentication) {		
+		return ((UserProfile)authentication.getPrincipal()).isPasswordNotExpired();
 	}
 
 }
