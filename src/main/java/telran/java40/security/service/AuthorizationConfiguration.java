@@ -24,16 +24,12 @@ public class AuthorizationConfiguration extends WebSecurityConfigurerAdapter {
 		http.csrf().disable();
 		http.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		//http.addFilterAfter(expiredPasswordFilter, BasicAuthenticationFilter.class);
+		http.addFilterAfter(expiredPasswordFilter, BasicAuthenticationFilter.class);
 		http.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/account/register/**")
 					.permitAll()
 				.antMatchers("/forum/posts/**")
 					.permitAll()
-				.antMatchers("/account/password/**")
-					.authenticated()
-				.antMatchers("/forum/**", "/account/**")
-					.access("@customSecurity.checkPasswordExpired(authentication)")
 				.antMatchers("/account/user/{login}/role/{role}/**")
 					.hasRole("ADMINISTRATOR")
 				.antMatchers(HttpMethod.PUT, "/account/user/{login}/**")

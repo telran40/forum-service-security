@@ -2,7 +2,6 @@ package telran.java40.security.service;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.time.LocalDate;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -11,23 +10,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.GenericFilterBean;
 
-import telran.java40.accounting.dao.UserAccountRepository;
-import telran.java40.accounting.model.UserAccount;
-
 @Service
 public class ExpiredPasswordFilter extends GenericFilterBean {
-
-	UserAccountRepository repository;
-
-	@Autowired
-	public ExpiredPasswordFilter(UserAccountRepository repository) {
-		this.repository = repository;
-	}
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
@@ -36,13 +24,10 @@ public class ExpiredPasswordFilter extends GenericFilterBean {
 		HttpServletResponse response = (HttpServletResponse) resp;
 		Principal principal = request.getUserPrincipal();
 		if (principal != null && checkEndPoint(request.getMethod(), request.getServletPath())) {
-//			UserProfile userProfile = (UserProfile) principal;
-//			if (!userProfile.isPasswordNotExpired()) {
-//				response.sendError(403, "Password expired");
-//				return;
-//			}
-			UserAccount userAccount = repository.findById(principal.getName()).get();
-			if (userAccount.getPasswordExpDate().isBefore(LocalDate.now())) {
+			UserProfile userProfile = (UserProfile) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal();
+			;
+			if (!userProfile.isPasswordNotExpired()) {
 				response.sendError(403, "Password expired");
 				return;
 			}

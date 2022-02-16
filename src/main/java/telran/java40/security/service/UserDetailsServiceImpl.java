@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,10 +26,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 							.map(r -> "ROLE_" + r.toUpperCase())
 							.toArray(String[]::new);
 		boolean credentialsNonExpired = userAccount.getPasswordExpDate().isAfter(LocalDate.now());
-//		return new User(username, userAccount.getPassword(), true, true, credentialsNonExpired,
-//				true, AuthorityUtils.createAuthorityList(roles));
-//		return new User(username, userAccount.getPassword(), 
-//				AuthorityUtils.createAuthorityList(roles));
 		return new UserProfile(username, userAccount.getPassword(), 
 				AuthorityUtils.createAuthorityList(roles), credentialsNonExpired);
 		
